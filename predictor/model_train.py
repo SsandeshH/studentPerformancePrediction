@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 import joblib
 
-
+load_dotenv()
 # this function was used used once to drop columns, ignore this as the csv has already been created. The columns were dropped for simplicity
 def makenewcsv():
     data = pd.read_csv(os.getenv("DATA_PATH"))
@@ -66,7 +66,7 @@ def train_and_save_models():
     }
 
     model_paths = {
-        "Linear": os.getenv("LNEAR_MODEL_PATH"),
+        "Linear": os.getenv("LINEAR_MODEL_PATH"),
         "Ridge": os.getenv("RIDGE_MODEL_PATH"),
         "Lasso": os.getenv("LASSO_MODEL_PATH"),
     }

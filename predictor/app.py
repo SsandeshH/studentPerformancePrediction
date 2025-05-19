@@ -4,13 +4,13 @@ from enum import Enum
 import joblib
 import os
 import pandas as pd
+from dotenv import load_dotenv
 
 app = FastAPI()
 
+load_dotenv()
 
-class input_datatype(
-    BaseModel
-):  # The Type of Data that user should enter. BaseModel is a pydantic model for dat validation
+class input_datatype(BaseModel):  # The Type of Data that user should enter. BaseModel is a pydantic model for dat validation
     Hours_Studied: int
     Attendance: int
     Extracurricular_Activities: str
@@ -33,19 +33,18 @@ async def root():  # async makes root() a coroutine, which can we stopped and pr
 async def prediction(data: input_datatype, model: ModelName):
     if model.value == "LinearRegression":
         model_selected = os.getenv("LINEAR_MODEL_PATH")
-
     elif model.value == "Lasso":
         model_selected = os.getenv("LASSO_MODEL_PATH")
-
     else:
         model_selected = os.getenv("RIDGE_MODEL_PATH")
 
-    if not os.path.exists(model_selected):
-        raise HTTPException(status_code=500, detail=f"Model not found at {model_selected}")
+    # if  not os.path.exists(model_selected):
+    #     raise HTTPException(status_code=500, detail=f"Model not found at {model_selected}")
 
     model_pipeline = joblib.load(model_selected)
 
-    sample = pd.DataFrame([data])
+    # Convert Pydantic model to dictionary (using Pydantic v2 syntax)
+    sample = pd.DataFrame([data.model_dump()])
 
     try:
         prediction = model_pipeline.predict(sample)[0]
@@ -55,5 +54,5 @@ async def prediction(data: input_datatype, model: ModelName):
     return {
         "model_used": model.value,
         "predicted_score": round(float(prediction), 2),
-        "input": data,
+        "input": data.model_dump(),
     }
