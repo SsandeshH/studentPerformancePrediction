@@ -186,4 +186,7 @@ cython_debug/
 .pypirc
 
 #models
-# models/
+models/
+
+# dotenv file
+.env
